@@ -1,0 +1,797 @@
+{
+  "ACE": {
+    "wiki": "Flag of the Aceh Sultanate.svg"
+  },
+  "AFG": {
+    "wiki": "Flag of Afghanistan (1826–1880).svg"
+  },
+  "ALB": {
+    "iso": "al"
+  },
+  "ALD": {
+    "iso": "dz"
+  },
+  "ALK": {
+    "iso": "us-ak"
+  },
+  "ANH": {
+    "wiki": "Flag of Anhalt Duchies.svg"
+  },
+  "ANL": {
+    "wiki": "Flag of Andalucía.svg"
+  },
+  "AOT": {
+    "wiki": "Flag of the United Tribes of New Zealand.svg"
+  },
+  "ARA": {
+    "iso": "sa"
+  },
+  "ARG": {
+    "iso": "ar"
+  },
+  "ARM": {
+    "iso": "am"
+  },
+  "ARN": {
+    "wiki": "Flag of Aragon.svg"
+  },
+  "ASH": {
+    "wiki": "Flag of Ashanti.svg"
+  },
+  "AST": {
+    "iso": "au"
+  },
+  "AUS": {
+    "wiki": "Flag of the Habsburg Monarchy.svg"
+  },
+  "AWA": {
+    "wiki": "Flag of Awadh.svg"
+  },
+  "AZB": {
+    "iso": "az"
+  },
+  "BAD": {
+    "wiki": "Flag of the Grand Duchy of Baden (1855–1891).svg"
+  },
+  "BAG": {
+    "wiki": "Flag of the Rewa State.svg"
+  },
+  "BAH": {
+    "iso": "bs"
+  },
+  "BAV": {
+    "wiki": "Flag of Bavaria (lozengy).svg"
+  },
+  "BEL": {
+    "iso": "be"
+  },
+  "BER": {
+    "wiki": "Baroda flag.svg"
+  },
+  "BHN": {
+    "iso": "bh"
+  },
+  "BHT": {
+    "wiki": "British Raj Red Ensign.svg"
+  },
+  "BHU": {
+    "iso": "bt"
+  },
+  "BHW": {
+    "wiki": "Flag of State of Bahawalpur.svg"
+  },
+  "BIC": {
+    "wiki": "Flag of the British East India Company (1801).svg"
+  },
+  "BIK": {
+    "wiki": "Flag of Bikaner.svg"
+  },
+  "BOH": {
+    "wiki": "Flag of Bohemia.svg"
+  },
+  "BOL": {
+    "iso": "bo"
+  },
+  "BOR": {
+    "wiki": "Flag of the Bornu Empire.svg"
+  },
+  "BOS": {
+    "wiki": "Flag of Bosnia (1831–1832).svg"
+  },
+  "BRA": {
+    "wiki": "Flagge Herzogtum Braunschweig.svg"
+  },
+  "BRE": {
+    "wiki": "Flag of Bremen.svg"
+  },
+  "BRI": {
+    "wiki": "Flag of Brittany.svg"
+  },
+  "BRU": {
+    "wiki": "Flag of Brunei 1906-1959.svg"
+  },
+  "BRZ": {
+    "wiki": "Flag of Brazil (1822–1853).svg"
+  },
+  "BUG": {
+    "wiki": "Flag of Buganda (1861-1876, 1881-1890).svg"
+  },
+  "BUK": {
+    "wiki": "Flag of the Emirate of Bukhara.svg"
+  },
+  "BUL": {
+    "iso": "bg"
+  },
+  "BUR": {
+    "wiki": "National flag of the Konbaung dynasty.svg"
+  },
+  "BYE": {
+    "wiki": "Flag of Belarus (1918, 1991–1995).svg"
+  },
+  "CAL": {
+    "iso": "us-ca"
+  },
+  "CAM": {
+    "wiki": "Flag of Cambodia (1863-1940).svg"
+  },
+  "CAN": {
+    "wiki": "Flag of Canada (1868–1921).svg"
+  },
+  "CAT": {
+    "wiki": "Flag of Catalonia.svg"
+  },
+  "CEY": {
+    "iso": "lk"
+  },
+  "CHE": {
+    "wiki": "Flag of the Cherokee Nation.svg"
+  },
+  "CHI": {
+    "wiki": "Flag of China (1889–1912).svg"
+  },
+  "CHL": {
+    "iso": "cl"
+  },
+  "CIR": {
+    "wiki": "Flag of Circassia (1840).svg"
+  },
+  "CLM": {
+    "wiki": "Flag of New Granada.svg"
+  },
+  "COB": {
+    "wiki": "Flagge Herzogtum Sachsen-Coburg-Gotha (1826-1911).svg"
+  },
+  "COC": {
+    "wiki": "Flag of the Kingdom of Cochin.svg"
+  },
+  "COR": {
+    "wiki": "Flag of Corsica.svg"
+  },
+  "COS": {
+    "iso": "cr"
+  },
+  "CRE": {
+    "wiki": "Flag of the Cretan State (Civil).svg"
+  },
+  "CRI": {
+    "wiki": "Flag of the Crimean Khanate.svg"
+  },
+  "CRO": {
+    "iso": "hr"
+  },
+  "CSA": {
+    "wiki": "Flag of the Confederate States (1861–1863).svg"
+  },
+  "CUB": {
+    "iso": "cu"
+  },
+  "CYP": {
+    "iso": "cy"
+  },
+  "CYR": {
+    "wiki": "Flag of Cyrenaica.svg"
+  },
+  "CZH": {
+    "iso": "cz"
+  },
+  "DAH": {
+    "wiki": "Flag of Ghezo of Dahomey.svg"
+  },
+  "DAI": {
+    "wiki": "Flag of the Nguyễn Dynasty Army (Musée de l'Armée, Paris; simplified version).svg"
+  },
+  "DEI": {
+    "iso": "nl"
+  },
+  "DEN": {
+    "iso": "dk"
+  },
+  "DES": {
+    "wiki": "Flag of Deseret (reconstructed).svg"
+  },
+  "DOM": {
+    "iso": "do"
+  },
+  "DZG": {
+    "wiki": "Flag of the Free City of Danzig.svg"
+  },
+  "ECU": {
+    "iso": "ec"
+  },
+  "EGY": {
+    "wiki": "Flag of Egypt (1844–1867).svg"
+  },
+  "ELS": {
+    "iso": "sv"
+  },
+  "ENG": {
+    "iso": "gb-eng"
+  },
+  "EOT": {
+    "wiki": "Flag of the Emirate of Transjordan.svg"
+  },
+  "EST": {
+    "iso": "ee"
+  },
+  "ETH": {
+    "wiki": "Flag of Ethiopia (1897–1974).svg"
+  },
+  "EZO": {
+    "wiki": "Flag of the Republic of Ezo.svg"
+  },
+  "FIN": {
+    "iso": "fi"
+  },
+  "FJI": {
+    "wiki": "Flag of the Kingdom of Fiji.svg"
+  },
+  "FLA": {
+    "wiki": "Flag of Flanders.svg"
+  },
+  "FLR": {
+    "iso": "us-fl"
+  },
+  "FRA": {
+    "iso": "fr"
+  },
+  "FRM": {
+    "wiki": "Flag of the Free City of Frankfurt.svg"
+  },
+  "FRS": {
+    "wiki": "Flag of the Republic of Formosa (1895).svg"
+  },
+  "FTJ": {
+    "wiki": "Flag of the Imamate of Futa Djallon (pre-1896).svg"
+  },
+  "GAL": {
+    "wiki": "Flag of Galicia and Lodomeria (1849-1890).svg"
+  },
+  "GBR": {
+    "iso": "gb"
+  },
+  "GCO": {
+    "wiki": "Flag of Gran Colombia.svg"
+  },
+  "GEO": {
+    "wiki": "Flag of Georgia (1918–1921, 4-5).svg"
+  },
+  "GER": {
+    "wiki": "Flag of Germany (1867–1918).svg"
+  },
+  "GLI": {
+    "wiki": "Flag of Galicia.svg"
+  },
+  "GRE": {
+    "wiki": "Flag of Greece (1822-1978).svg"
+  },
+  "GRG": {
+    "iso": "us-ga"
+  },
+  "GRN": {
+    "iso": "gl"
+  },
+  "GUA": {
+    "iso": "gt"
+  },
+  "GWA": {
+    "wiki": "Flag of Gwalior (State).svg"
+  },
+  "HAI": {
+    "wiki": "Flag of Haiti (1820–1849, 1859–1964).svg"
+  },
+  "HAM": {
+    "wiki": "Flag of Hamburg.svg"
+  },
+  "HAN": {
+    "wiki": "Flag of Hanover 1837-1866.svg"
+  },
+  "HAR": {
+    "wiki": "Flag of Emirate of Harar.svg"
+  },
+  "HAW": {
+    "wiki": "Flag of Kingdom of Hawaii (1816–1845).svg"
+  },
+  "HBC": {
+    "wiki": "Hudson's Bay Company Flag.svg"
+  },
+  "HDJ": {
+    "wiki": "Flag of Hejaz (1917).svg"
+  },
+  "HES": {
+    "wiki": "Flagge Großherzogtum Hessen mit Wappen.svg"
+  },
+  "HND": {
+    "wiki": "British Raj Red Ensign.svg"
+  },
+  "HOH": {
+    "wiki": "Flag of Hohenzollern (1576–1850).svg"
+  },
+  "HOL": {
+    "wiki": "Flag of Schleswig-Holstein.svg"
+  },
+  "HON": {
+    "iso": "hn"
+  },
+  "HRE": {
+    "wiki": "Banner of the Holy Roman Emperor with haloes (1430-1806).svg"
+  },
+  "HUN": {
+    "iso": "hu"
+  },
+  "HYD": {
+    "wiki": "Flag of the State of Hyderabad (18th century-1900).svg"
+  },
+  "ICL": {
+    "iso": "is"
+  },
+  "IDN": {
+    "iso": "id"
+  },
+  "IND": {
+    "wiki": "Flag of Indore.svg"
+  },
+  "ION": {
+    "wiki": "Flag of the United States of the Ionian Islands.svg"
+  },
+  "IRE": {
+    "wiki": "Green harp flag of Ireland.svg"
+  },
+  "IRQ": {
+    "iso": "iq"
+  },
+  "ISR": {
+    "iso": "il"
+  },
+  "ITA": {
+    "wiki": "Flag of Italy (1861–1946).svg"
+  },
+  "JAB": {
+    "wiki": "Flag of the Emirate of Ha'il (1835 - 1920).svg"
+  },
+  "JAI": {
+    "wiki": "Flag of Jaipur.svg"
+  },
+  "JAM": {
+    "iso": "jm"
+  },
+  "JAP": {
+    "iso": "jp"
+  },
+  "JOD": {
+    "wiki": "Flag of Jodhpur.svg"
+  },
+  "JOH": {
+    "wiki": "Flag of Johor (1855–1865).svg"
+  },
+  "KAS": {
+    "wiki": "Flag of the Maharaja of Jammu and Kashmir (1846-1936).svg"
+  },
+  "KAZ": {
+    "iso": "kz"
+  },
+  "KHI": {
+    "wiki": "Flag of the Khanate of Khiva.svg"
+  },
+  "KOK": {
+    "wiki": "Flag of the Khanate of Kokand.svg"
+  },
+  "KON": {
+    "wiki": "Flag of the Kingdom of Kongo according to Giovanni Cavazzi da Montecuccolo.svg"
+  },
+  "KOR": {
+    "wiki": "Flag of Korea (1882–1910).svg"
+  },
+  "KRA": {
+    "wiki": "Flag of Kraków(2-3).svg"
+  },
+  "KUK": {
+    "wiki": "Flag of Austria-Hungary (1867–1918).svg"
+  },
+  "KUR": {
+    "wiki": "Flag of Kingdom of Kurdistan (1922-1924).svg"
+  },
+  "KYR": {
+    "iso": "kg"
+  },
+  "LAH": {
+    "wiki": "Flag of the Sultanate of Lahej.svg"
+  },
+  "LAN": {
+    "wiki": "Flag of Lanfang Republic.svg"
+  },
+  "LAT": {
+    "iso": "lv"
+  },
+  "LBY": {
+    "iso": "ly"
+  },
+  "LEB": {
+    "iso": "lb"
+  },
+  "LIB": {
+    "wiki": "Flag of Liberia (1827–1847).svg"
+  },
+  "LIP": {
+    "wiki": "Flag of Lippe (1815-1880).svg"
+  },
+  "LIT": {
+    "iso": "lt"
+  },
+  "LOM": {
+    "wiki": "Flag of Lombardy (version 1).svg"
+  },
+  "LOU": {
+    "iso": "us-la"
+  },
+  "LUA": {
+    "wiki": "Flag of the Kingdom of Luang Phrabang (1707-1893).svg"
+  },
+  "LUB": {
+    "wiki": "Flag of the Free City of Lübeck.svg"
+  },
+  "LUC": {
+    "wiki": "Flag of the Duchy of Lucca.svg"
+  },
+  "LUX": {
+    "iso": "lu"
+  },
+  "MAD": {
+    "wiki": "Flag of the Merina Kingdom.svg"
+  },
+  "MAS": {
+    "wiki": "Flag of the Emirate of Mascara.svg"
+  },
+  "MEC": {
+    "wiki": "Flagge Großherzogtümer Mecklenburg.svg"
+  },
+  "MEI": {
+    "wiki": "Flag of Saxe-Meiningen (1826).svg"
+  },
+  "MEX": {
+    "wiki": "Flag of Mexico (1823-1864, 1867-1893).svg"
+  },
+  "MGL": {
+    "wiki": "Flag of Bogd Khaanate Mongolia.svg"
+  },
+  "MHR": {
+    "wiki": "Flag of the Maratha Empire.svg"
+  },
+  "MLT": {
+    "iso": "mt"
+  },
+  "MOD": {
+    "wiki": "State Flag of the Duchy of Modena and Reggio (1830-1859).svg"
+  },
+  "MOL": {
+    "wiki": "Flag of Moldavia in 1831.svg"
+  },
+  "MON": {
+    "wiki": "Flag of Montenegro (1860–1905).svg"
+  },
+  "MOR": {
+    "wiki": "Flag of Morocco (1666–1915).svg"
+  },
+  "MSN": {
+    "wiki": "Flag of the Massina Empire.svg"
+  },
+  "MST": {
+    "wiki": "Flagge Großherzogtümer Mecklenburg.svg"
+  },
+  "MUG": {
+    "wiki": "Flag of the Mughal Empire (triangular).svg"
+  },
+  "MYS": {
+    "wiki": "Flag of Kingdom of Mysore.svg"
+  },
+  "NAL": {
+    "wiki": "Flag of Natalia Republic.svg"
+  },
+  "NAS": {
+    "wiki": "Flagge Herzogtum Nassau (1806-1866).svg"
+  },
+  "NAV": {
+    "wiki": "Bandera de Navarra.svg"
+  },
+  "NCR": {
+    "iso": "us-nc"
+  },
+  "NEJ": {
+    "wiki": "Flag of the Emirate of Nejd and Hasa.svg"
+  },
+  "NEP": {
+    "iso": "np"
+  },
+  "NET": {
+    "iso": "nl"
+  },
+  "NEW": {
+    "wiki": "Flag of Newfoundland (1870–1904).svg"
+  },
+  "NGF": {
+    "wiki": "Flag of Germany (1867–1918).svg"
+  },
+  "NIC": {
+    "iso": "ni"
+  },
+  "NOR": {
+    "wiki": "Flag of Norway (1821–1844).svg"
+  },
+  "NZL": {
+    "iso": "nz"
+  },
+  "OLD": {
+    "wiki": "Flagge Herzogtum Oldenburg.svg"
+  },
+  "OMA": {
+    "wiki": "Flag of Muscat.svg"
+  },
+  "ORA": {
+    "wiki": "Flag of the Orange Free State.svg"
+  },
+  "ORG": {
+    "iso": "us-or"
+  },
+  "PAK": {
+    "iso": "pk"
+  },
+  "PAL": {
+    "iso": "ps"
+  },
+  "PAN": {
+    "wiki": "Flag of the Sikh Empire.svg"
+  },
+  "PAP": {
+    "wiki": "Flag of the Papal States (1825-1870).svg"
+  },
+  "PAR": {
+    "wiki": "Flag of the Duchy of Parma.svg"
+  },
+  "PBC": {
+    "wiki": "Flag of the Peru-Bolivian Confederation.svg"
+  },
+  "PCO": {
+    "iso": "pr"
+  },
+  "PER": {
+    "wiki": "Accurate flag of Qajar Iran.svg"
+  },
+  "PEU": {
+    "iso": "pe"
+  },
+  "PHI": {
+    "iso": "ph"
+  },
+  "PLC": {
+    "iso": "pl"
+  },
+  "PLY": {
+    "wiki": "Flag of the Kingdom of Tahiti.svg"
+  },
+  "PNM": {
+    "iso": "pa"
+  },
+  "POL": {
+    "iso": "pl"
+  },
+  "POR": {
+    "wiki": "Flag of Portugal (1830–1910).svg"
+  },
+  "PRG": {
+    "iso": "py"
+  },
+  "PRU": {
+    "wiki": "Flag of the Kingdom of Prussia (1803-1892).svg"
+  },
+  "QUE": {
+    "wiki": "Flag of Quebec.svg"
+  },
+  "RHN": {
+    "wiki": "Alleged flag of the Rhine Confederation 1806-13.svg"
+  },
+  "RIO": {
+    "wiki": "Flag of the Republic of the Rio Grande (historical).svg"
+  },
+  "ROM": {
+    "iso": "ro"
+  },
+  "RUS": {
+    "iso": "ru"
+  },
+  "RYU": {
+    "wiki": "Flag of the Ryukyu Kingdom.svg"
+  },
+  "SAF": {
+    "iso": "za"
+  },
+  "SAR": {
+    "wiki": "State Flag and War Ensign of the Kingdom of Sardinia (1816-1848).svg"
+  },
+  "SAV": {
+    "wiki": "Flag of Savoie.svg"
+  },
+  "SAX": {
+    "wiki": "Flag of Saxony.svg"
+  },
+  "SCA": {
+    "wiki": "Flag of the Kalmar Union.svg"
+  },
+  "SCH": {
+    "wiki": "Flag of Schleswig-Holstein.svg"
+  },
+  "SCM": {
+    "wiki": "Flagge Fürstentum Schaumburg-Lippe.svg"
+  },
+  "SCO": {
+    "iso": "gb-sct"
+  },
+  "SCR": {
+    "iso": "us-sc"
+  },
+  "SCW": {
+    "wiki": "Flag of Schwarzburg Sondershausen.svg"
+  },
+  "SER": {
+    "wiki": "Flag of the Principality of Serbia (1838-1849).svg"
+  },
+  "SIA": {
+    "wiki": "Flag of Siam (1855).svg"
+  },
+  "SIC": {
+    "wiki": "Flag of the Kingdom of the Two Sicilies (1816).svg"
+  },
+  "SIN": {
+    "wiki": "Flag of Sindh (1783–1843).svg"
+  },
+  "SLO": {
+    "iso": "si"
+  },
+  "SLV": {
+    "iso": "sk"
+  },
+  "SOK": {
+    "wiki": "Flag of the Sokoto Caliphate.svg"
+  },
+  "SPA": {
+    "wiki": "Flag of Spain (1785–1873, 1875–1931).svg"
+  },
+  "SPC": {
+    "wiki": "Flag of Spain (1785–1873, 1875–1931).svg"
+  },
+  "SUD": {
+    "wiki": "Flag of the Mahdi movement in Sudan.svg"
+  },
+  "SUL": {
+    "wiki": "Late 19th Century Flag of Sulu.svg"
+  },
+  "SWE": {
+    "iso": "se"
+  },
+  "SWI": {
+    "iso": "ch"
+  },
+  "SWZ": {
+    "wiki": "Flag of Swaziland (1894–1902).svg"
+  },
+  "SYR": {
+    "iso": "sy"
+  },
+  "TEX": {
+    "iso": "us-tx"
+  },
+  "TIB": {
+    "wiki": "Flag of Tibet.svg"
+  },
+  "TJI": {
+    "iso": "tj"
+  },
+  "TNG": {
+    "iso": "to"
+  },
+  "TRA": {
+    "wiki": "Flag of Kingdom of Travancore.svg"
+  },
+  "TRC": {
+    "iso": "tm"
+  },
+  "TRI": {
+    "wiki": "Maritime flag of Regency of Tripoli (18th century).svg"
+  },
+  "TRN": {
+    "wiki": "Flag of Transvaal.svg"
+  },
+  "TRS": {
+    "wiki": "Flag of Transylvania before 1918.svg"
+  },
+  "TUN": {
+    "wiki": "Flag of the Beylik of Tunis (1831–1881) and Tunisia (1881–1959).svg"
+  },
+  "TUR": {
+    "wiki": "Flag of the Ottoman Empire (1844–1922).svg"
+  },
+  "TUS": {
+    "wiki": "Flag of the Grand Duchy of Tuscany (1840).svg"
+  },
+  "UCA": {
+    "wiki": "Flag of the Federal Republic of Central America.svg"
+  },
+  "UKR": {
+    "iso": "ua"
+  },
+  "UNL": {
+    "iso": "nl"
+  },
+  "UNT": {
+    "wiki": "Flag of the United Tribes of New Zealand.svg"
+  },
+  "UOM": {
+    "iso": "us-mi"
+  },
+  "URU": {
+    "iso": "uy"
+  },
+  "USA": {
+    "wiki": "Flag of the United States (1837–1845).svg"
+  },
+  "UZB": {
+    "iso": "uz"
+  },
+  "VEN": {
+    "wiki": "Flag of the Republic of Venice 1848–49.svg"
+  },
+  "VNZ": {
+    "wiki": "Flag of Venezuela (1836–1859).svg"
+  },
+  "WAL": {
+    "wiki": "Flag of Wallachia 1834.svg"
+  },
+  "WEI": {
+    "wiki": "Flagge Großherzogtum Sachsen-Weimar-Eisenach (1813-1897).svg"
+  },
+  "WES": {
+    "wiki": "Flag of the Kingdom of Westphalia.svg"
+  },
+  "WLD": {
+    "wiki": "Flag of Waldeck before 1830.svg"
+  },
+  "WLL": {
+    "wiki": "Flag of Wallonia.svg"
+  },
+  "WLS": {
+    "iso": "gb-wls"
+  },
+  "WUR": {
+    "wiki": "Flagge Königreich Württemberg.svg"
+  },
+  "XIN": {
+    "wiki": "Flag of Yettishar (1865-1873).svg"
+  },
+  "YUC": {
+    "wiki": "Flag of the Republic of Yucatan.svg"
+  },
+  "YUG": {
+    "wiki": "Flag of Yugoslavia (1918–1941).svg"
+  },
+  "ZAN": {
+    "wiki": "Flag of the Sultanate of Zanzibar.svg"
+  }
+}
