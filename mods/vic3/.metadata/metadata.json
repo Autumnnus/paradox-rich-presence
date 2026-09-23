@@ -1,0 +1,14 @@
+{
+  "name": "Discord Rich Presence",
+  "id": "",
+  "version": "0.1.0",
+  "supported_game_version": "1.13.11",
+  "short_description": "Shows your country, rank, year and war status on your Discord profile. Requires the Paradox Rich Presence companion app: github.com/Autumnnus/paradox-rich-presence",
+  "tags": [
+    "Utilities"
+  ],
+  "relationships": [],
+  "game_custom_data": {
+    "multiplayer_synchronized": true
+  }
+}

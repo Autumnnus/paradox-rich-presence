@@ -1,0 +1,110 @@
+﻿# Discord Rich Presence
+# Oyuncu ulkelerin durumunu debug.log'a yazar; companion/drp_companion.py bu satirlari
+# okuyup Discord'a iletir. Oyun mantigina hicbir etkisi yoktur.
+#
+# Protokol (surum 2):
+#   DRP|2|local|<yerel oyuncunun tag'i>
+#   DRP|2|begin|<tag>
+#   DRP|2|kv|<tag>|<anahtar>|<deger>      tek degerli alan
+#   DRP|2|item|<tag>|<anahtar>|<deger>    liste elemani (ayni anahtar birden cok kez)
+#   DRP|2|end|<tag>
+# Tooltip isaretlemesi ureten veri fonksiyonlari (GetRank gibi) kullanilmaz; bunlarin
+# yerine triggerlarla sabit anahtarlar yazilir ve companion tarafinda cevrilir.
+
+on_game_started_after_lobby = {
+	on_actions = { drp_report_players }
+}
+
+on_monthly_pulse = {
+	on_actions = { drp_report_players }
+}
+
+drp_report_players = {
+	effect = {
+		debug_log = "DRP|2|local|[GetPlayer.GetTagName]"
+
+		every_country = {
+			limit = { is_player = yes }
+			save_scope_as = drp_player
+
+			debug_log = "DRP|2|begin|[THIS.GetCountry.GetTagName]"
+
+			# Genel
+			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|country|[THIS.GetCountry.GetNameNoFormatting]"
+			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|date|[TimeKeeper.GetCurrentDate.GetString]"
+
+			# Ekonomi
+			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|gdp|[THIS.GetCountry.GetGDP|1*]"
+			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|gdp_rank|[THIS.GetCountry.GetGDPRanking]"
+			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|population|[THIS.GetCountry.GetTotalPopulation|*]"
+
+			# Secim (durum ikonu icin)
+			if = {
+				limit = { in_election_campaign = yes }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|election|yes"
+			}
+
+			# Rutbe: GetRank tooltip isaretlemesi dondurdugu icin anahtar olarak yazilir
+			if = {
+				limit = { country_rank = rank_value:great_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|great_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:major_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|major_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:minor_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|minor_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:insignificant_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|insignificant_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:unrecognized_major_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|unrecognized_major_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:unrecognized_regional_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|unrecognized_regional_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:unrecognized_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|unrecognized_power"
+			}
+			else_if = {
+				limit = { country_rank = rank_value:decentralized_power }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|decentralized_power"
+			}
+
+			# Savas ve diplomasi
+			if = {
+				limit = { is_at_war = yes }
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|war|yes"
+			}
+			else = {
+				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|war|no"
+			}
+			every_country = {
+				limit = { has_war_with = scope:drp_player }
+				debug_log = "DRP|2|item|[SCOPE.sCountry('drp_player').GetTagName]|enemy|[THIS.GetCountry.GetNameNoFormatting]"
+				if = {
+					limit = { is_revolutionary = yes }
+					debug_log = "DRP|2|item|[SCOPE.sCountry('drp_player').GetTagName]|enemy_rev|[THIS.GetCountry.GetNameNoFormatting]"
+				}
+			}
+			if = {
+				limit = { is_diplomatic_play_committed_participant = yes }
+				every_country = {
+					limit = {
+						is_diplomatic_play_enemy_of = scope:drp_player
+						NOT = { has_war_with = scope:drp_player }
+					}
+					debug_log = "DRP|2|item|[SCOPE.sCountry('drp_player').GetTagName]|play_enemy|[THIS.GetCountry.GetNameNoFormatting]"
+				}
+			}
+			debug_log = "DRP|2|end|[THIS.GetCountry.GetTagName]"
+		}
+	}
+}
