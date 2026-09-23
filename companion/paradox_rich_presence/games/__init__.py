@@ -1,7 +1,7 @@
-"""Desteklenen oyunlarin kaydi.
+"""Registry of supported games.
 
-Yeni bir oyun eklemek icin games/<oyun>.py icinde bir GameSpec tanimlanir ve
-asagidaki listeye eklenir (bkz. docs/adding-a-game.md).
+To add a game, define a GameSpec in games/<game>.py and add it to the list below
+(see docs/adding-a-game.md).
 """
 
 from dataclasses import dataclass, field
@@ -10,13 +10,13 @@ from typing import Callable, FrozenSet
 
 @dataclass(frozen=True)
 class GameSpec:
-    key: str                       # kisa ad; ayarlarda ve loglarda kullanilir (ornegin "vic3")
-    name: str                      # gorunen ad
-    client_id: str                 # oyuna ozel Discord Application ID
-    process_names: FrozenSet[str]  # kucuk harfli surec adlari (Windows ve Mac/Linux)
-    docs_folder: str               # Belgeler/Paradox Interactive altindaki klasor adi
-    create_presence: Callable      # (cfg) -> feed(ev), activity() arayuzlu nesne
-    parse_line: Callable           # (satir) -> olay sozlugu ya da None
+    key: str                       # short name used in config and logs, e.g. "vic3"
+    name: str                      # display name
+    client_id: str                 # Discord Application ID for this game
+    process_names: FrozenSet[str]  # lowercase process names (Windows and macOS/Linux)
+    docs_folder: str               # folder name under Documents/Paradox Interactive
+    create_presence: Callable      # (cfg) -> object with feed(ev) and activity()
+    parse_line: Callable           # (line) -> event dict or None
     log_file: str = "debug.log"
     extra: dict = field(default_factory=dict)
 

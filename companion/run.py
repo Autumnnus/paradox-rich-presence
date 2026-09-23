@@ -1,4 +1,4 @@
-"""Gelistirme ve PyInstaller icin giris noktasi: python3 companion/run.py"""
+"""Entry point for development and PyInstaller: python3 companion/run.py"""
 
 from paradox_rich_presence.app import main
 

@@ -1,4 +1,4 @@
-"""Discord'un yerel RPC (IPC) protokolu icin kucuk, bagimliliksiz bir istemci."""
+"""Minimal, dependency-free client for Discord's local RPC (IPC) protocol."""
 
 import json
 import logging
@@ -17,8 +17,8 @@ def _unix_temp_dirs():
         if os.environ.get(var):
             dirs.append(os.environ[var])
     if sys.platform == "darwin":
-        # launchd ile baslatilan ajanlarda TMPDIR tanimli olmayabilir; Discord soketi
-        # kullanicinin Darwin gecici klasorundedir.
+        # Agents started by launchd may not have TMPDIR set; Discord's socket lives in
+        # the user's Darwin temp directory.
         try:
             dirs.append(os.confstr(65537))  # _CS_DARWIN_USER_TEMP_DIR
         except (ValueError, OSError):
@@ -65,10 +65,10 @@ class DiscordIPC:
             op, data = self._recv()
             if op == self.OP_FRAME and data.get("evt") == "READY":
                 user = data.get("data", {}).get("user", {})
-                log.info("Discord'a baglanildi (%s)", user.get("username", "?"))
+                log.info("Connected to Discord (%s)", user.get("username", "?"))
                 return True
             self.close()
-            raise ConnectionError("Discord el sikismayi reddetti: %s" % data)
+            raise ConnectionError("Discord rejected the handshake: %s" % data)
         return False
 
     def _send(self, op, payload):
@@ -84,7 +84,7 @@ class DiscordIPC:
         while len(data) < n:
             chunk = self.pipe.read(n - len(data)) if self.pipe else self.sock.recv(n - len(data))
             if not chunk:
-                raise ConnectionError("Discord baglantisi kapandi")
+                raise ConnectionError("Discord connection closed")
             data += chunk
         return data
 
@@ -100,7 +100,7 @@ class DiscordIPC:
         })
         op, data = self._recv()
         if data.get("evt") == "ERROR":
-            raise ValueError("Discord etkinligi reddetti: %s" % data.get("data"))
+            raise ValueError("Discord rejected the activity: %s" % data.get("data"))
 
     def close(self):
         for h in (self.sock, self.pipe):

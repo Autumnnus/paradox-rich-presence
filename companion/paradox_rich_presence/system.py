@@ -1,6 +1,6 @@
-"""Isletim sistemine ozgu yardimcilar: klasorler, surec listesi, Windows entegrasyonu.
+"""OS-specific helpers: folders, process list and Windows integration.
 
-Yalnizca standart kutuphane kullanilir; Windows API'lerine ctypes/winreg ile erisilir.
+Standard library only; Windows APIs are reached through ctypes/winreg.
 """
 
 import os
@@ -14,13 +14,13 @@ IS_WINDOWS = sys.platform == "win32"
 IS_MAC = sys.platform == "darwin"
 
 
-# --------------------------------------------------------------------------- klasorler
+# --------------------------------------------------------------------------- folders
 
 def documents_dir():
-    """Paradox oyunlarinin kullanici klasorunun bulundugu yer.
+    """Parent of the Paradox Interactive user folder.
 
-    Windows'ta Belgeler klasoru OneDrive'a yonlendirilmis olabilecegi icin
-    bilinen klasor API'si kullanilir. Linux'ta Paradox ~/.local/share kullanir.
+    On Windows the Documents folder may be redirected (e.g. to OneDrive), so the
+    known-folder API is used. On Linux Paradox uses ~/.local/share.
     """
     if IS_WINDOWS:
         path = _windows_known_folder("{FDD39AD0-238F-46AF-ADB4-6C85480369C7}")  # FOLDERID_Documents
@@ -33,7 +33,7 @@ def documents_dir():
 
 
 def data_dir():
-    """Ayar ve log dosyalarinin tutuldugu klasor (yoksa olusturulur)."""
+    """Folder for the config and log files (created if missing)."""
     if IS_WINDOWS:
         base = Path(os.environ.get("LOCALAPPDATA", str(Path.home())))
     elif IS_MAC:
@@ -67,15 +67,15 @@ def _windows_known_folder(guid):
             ctypes.windll.ole32.CoTaskMemFree(out)
 
 
-# --------------------------------------------------------------------------- surecler
+# --------------------------------------------------------------------------- processes
 
 def running_process_names():
-    """Calisan sureclerin kucuk harfli adlari."""
+    """Lowercase names of the running processes."""
     try:
         if IS_WINDOWS:
             out = subprocess.run(
                 ["tasklist", "/FO", "CSV", "/NH"], capture_output=True, text=True,
-                creationflags=0x08000000,  # CREATE_NO_WINDOW: konsolsuz uygulamada pencere acilmasin
+                creationflags=0x08000000,  # CREATE_NO_WINDOW: no console flash from the windowless app
             ).stdout
             return {line.split(",")[0].strip('"').lower() for line in out.splitlines() if line}
         out = subprocess.run(["ps", "-A", "-o", "comm="], capture_output=True, text=True).stdout
@@ -87,7 +87,7 @@ def running_process_names():
 # --------------------------------------------------------------------------- Windows
 
 class WindowsInstance:
-    """Tek ornek kilidi ve durdurma sinyali (adlandirilmis mutex + event)."""
+    """Single-instance lock and stop signal (named mutex + event)."""
 
     MUTEX_NAME = "Local\\%s.Instance" % APP_ID
     EVENT_NAME = "Local\\%s.Stop" % APP_ID
@@ -107,7 +107,7 @@ class WindowsInstance:
 
 
 def message_box(text, yes_no=False):
-    """Windows mesaj kutusu; yes_no ise Evet'e basildiginda True doner."""
+    """Windows message box; with yes_no, returns True when Yes is clicked."""
     import ctypes
     MB_YESNO, MB_ICONINFO, MB_ICONQUESTION, IDYES = 0x4, 0x40, 0x20, 6
     style = (MB_YESNO | MB_ICONQUESTION) if yes_no else MB_ICONINFO
@@ -128,7 +128,7 @@ def autostart_enabled():
 
 
 def set_autostart(enabled):
-    """Oturum acilisinda baslatmayi kullanici duzeyinde (yonetici izni gerekmeden) ayarlar."""
+    """Start at sign-in, per user (no administrator rights needed)."""
     import winreg
     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY, 0, winreg.KEY_SET_VALUE) as key:
         if enabled:

@@ -1,15 +1,15 @@
-﻿# Discord Rich Presence
-# Oyuncu ulkelerin durumunu debug.log'a yazar; companion/drp_companion.py bu satirlari
-# okuyup Discord'a iletir. Oyun mantigina hicbir etkisi yoktur.
+﻿# Paradox Rich Presence
+# Writes the player countries' status to debug.log; the companion app reads these lines
+# and forwards them to Discord. Has no effect on the game itself.
 #
-# Protokol (surum 2):
-#   DRP|2|local|<yerel oyuncunun tag'i>
+# Protocol (version 2):
+#   DRP|2|local|<local player's tag>
 #   DRP|2|begin|<tag>
-#   DRP|2|kv|<tag>|<anahtar>|<deger>      tek degerli alan
-#   DRP|2|item|<tag>|<anahtar>|<deger>    liste elemani (ayni anahtar birden cok kez)
+#   DRP|2|kv|<tag>|<key>|<value>      single-value field
+#   DRP|2|item|<tag>|<key>|<value>    list item (same key may repeat)
 #   DRP|2|end|<tag>
-# Tooltip isaretlemesi ureten veri fonksiyonlari (GetRank gibi) kullanilmaz; bunlarin
-# yerine triggerlarla sabit anahtarlar yazilir ve companion tarafinda cevrilir.
+# Data functions that emit tooltip markup (such as GetRank) are avoided; fixed keys are
+# written through triggers instead and translated by the companion.
 
 on_game_started_after_lobby = {
 	on_actions = { drp_report_players }
@@ -29,22 +29,22 @@ drp_report_players = {
 
 			debug_log = "DRP|2|begin|[THIS.GetCountry.GetTagName]"
 
-			# Genel
+			# General
 			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|country|[THIS.GetCountry.GetNameNoFormatting]"
 			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|date|[TimeKeeper.GetCurrentDate.GetString]"
 
-			# Ekonomi
+			# Economy
 			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|gdp|[THIS.GetCountry.GetGDP|1*]"
 			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|gdp_rank|[THIS.GetCountry.GetGDPRanking]"
 			debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|population|[THIS.GetCountry.GetTotalPopulation|*]"
 
-			# Secim (durum ikonu icin)
+			# Election (status icon)
 			if = {
 				limit = { in_election_campaign = yes }
 				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|election|yes"
 			}
 
-			# Rutbe: GetRank tooltip isaretlemesi dondurdugu icin anahtar olarak yazilir
+			# Rank: written as a key because GetRank returns tooltip markup
 			if = {
 				limit = { country_rank = rank_value:great_power }
 				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|great_power"
@@ -78,7 +78,7 @@ drp_report_players = {
 				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|rank|decentralized_power"
 			}
 
-			# Savas ve diplomasi
+			# War and diplomacy
 			if = {
 				limit = { is_at_war = yes }
 				debug_log = "DRP|2|kv|[THIS.GetCountry.GetTagName]|war|yes"
@@ -104,6 +104,7 @@ drp_report_players = {
 					debug_log = "DRP|2|item|[SCOPE.sCountry('drp_player').GetTagName]|play_enemy|[THIS.GetCountry.GetNameNoFormatting]"
 				}
 			}
+
 			debug_log = "DRP|2|end|[THIS.GetCountry.GetTagName]"
 		}
 	}

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  SignPath artifact yapilandirmasi. SignPath panelinde projenin Artifact Configurations
-  bolumune bu icerik yapistirilir.
+  SignPath artifact configuration. Paste this into the project's Artifact Configurations
+  in the SignPath web app.
 
-  - GitHub artifact'lari zip olarak iletildigi icin kok eleman zip-file'dir.
-  - SignPath Foundation, urun adi ve surumu metadata kisitlariyla zorunlu tutar; surum her
-    derlemede release.yml tarafindan "version" parametresiyle gonderilir ve exe'nin
-    ProductVersion degeriyle (packaging/windows/make_version_info.py) eslesmelidir.
+  - GitHub artifacts are delivered as zip files, hence the zip-file root element.
+  - SignPath Foundation requires product name and version metadata restrictions. The
+    version is passed on every build by release.yml as the "version" parameter and must
+    match the exe's ProductVersion (packaging/windows/make_version_info.py).
 -->
 <artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
   <parameters>

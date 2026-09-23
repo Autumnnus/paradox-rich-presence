@@ -19,7 +19,7 @@ class SystemTests(unittest.TestCase):
         self.assertTrue(system.data_dir().is_dir())
 
 
-@unittest.skipUnless(system.IS_WINDOWS, "yalnizca Windows")
+@unittest.skipUnless(system.IS_WINDOWS, "Windows only")
 class WindowsTests(unittest.TestCase):
     def test_known_documents_folder_exists(self):
         self.assertTrue(system.documents_dir().is_dir())

@@ -1,36 +1,34 @@
-# Yeni oyun ekleme
+# Adding a game
 
-Victoria 3 örnek alınarak (`mods/vic3`, `companion/paradox_rich_presence/games/vic3.py`) yeni bir Paradox oyunu şu adımlarla eklenir.
+Use Victoria 3 as the reference: `mods/vic3` and `companion/paradox_rich_presence/games/vic3.py`.
 
-## 1. Discord uygulaması
+## 1. Discord application
 
-[Discord Developer Portal](https://discord.com/developers/applications)'da oyunun adıyla yeni bir uygulama aç, ör. "Crusader Kings III". Discord bu adı profilde "… oynuyor" başlığı olarak gösterir.
+Create an application named after the game in the [Discord Developer Portal](https://discord.com/developers/applications), e.g. "Crusader Kings III". Discord shows this name as the "Playing" title.
 
-- **Application ID**'yi kopyala.
-- **Rich Presence → Art Assets** altına `logo` adıyla oyunun logosunu yükle. Bayrak ya da portre bulunamadığında bu görsel gösterilir.
+- Copy the **Application ID**.
+- Under **Rich Presence → Art Assets**, upload the game logo with the name `logo`. It is shown when no better image is available.
 
-## 2. Mod (`mods/<oyun>/`)
+## 2. Mod (`mods/<game>/`)
 
-Mod, oyunun `debug.log` dosyasına `debug_log` efektiyle `DRP|<sürüm>|...` satırları yazar. Victoria 3'teki protokol:
+The mod writes `DRP|<version>|...` lines to the game's `debug.log` with the `debug_log` effect. Victoria 3 uses:
 
 ```
-DRP|2|local|<yerel oyuncu>
-DRP|2|begin|<kimlik>
-DRP|2|kv|<kimlik>|<anahtar>|<değer>
-DRP|2|item|<kimlik>|<anahtar>|<değer>
-DRP|2|end|<kimlik>
+DRP|2|local|<local player>
+DRP|2|begin|<id>
+DRP|2|kv|<id>|<key>|<value>
+DRP|2|item|<id>|<key>|<value>
+DRP|2|end|<id>
 ```
 
-Dikkat edilecekler:
+- Data functions that return tooltip markup (Victoria 3's `GetRank`) come out garbled in the log. Log fixed keys through triggers instead and translate them in the companion.
+- Use an infrequent `on_action` (Victoria 3: `on_monthly_pulse`) and limit it to players.
+- Victoria 3 uses `.metadata/metadata.json`; CK3, EU4 and HOI4 use `descriptor.mod`.
+- Check the output in `Documents/Paradox Interactive/<Game>/logs/debug.log` before writing the parser.
 
-- **Tooltip döndüren veri fonksiyonları** (ör. Victoria 3'te `GetRank`) log'a işaretleme kodlarıyla yazılır. Bunların yerine koşullarla sabit anahtarlar logla, çeviriyi yardımcı programda yap.
-- **Tetikleyici seç.** Oyuncuya özgü ve seyrek çalışan bir `on_action` kullan: Victoria 3'te `on_monthly_pulse`. Bütün ülkeler için çalışan tetikleyicilerde mutlaka oyuncuyla sınırla (`is_player = yes` / `is_ai = no`).
-- **Klasör yapısı oyuna göre değişir.** Victoria 3 `.metadata/metadata.json` kullanır. CK3, EU4 ve HOI4 ise `descriptor.mod` dosyası ile `mod/` klasöründe bir `.mod` dosyası kullanır.
-- **Önce doğrula.** Oyunda bir ay ilerletip `Belgeler/Paradox Interactive/<Oyun>/logs/debug.log` içinde satırların doğru çıktığını kontrol et.
+## 3. Companion (`companion/paradox_rich_presence/games/<game>.py`)
 
-## 3. Yardımcı program (`companion/paradox_rich_presence/games/<oyun>.py`)
-
-Modülde iki şey olmalı: satırları olaylara çeviren bir `parse_line(line)` fonksiyonu ve `feed(ev)` ile `activity()` yöntemlerini sağlayan bir durum sınıfı. Sonunda bir `GameSpec` tanımlanır:
+Provide a `parse_line(line)` function and a state class with `feed(ev)` and `activity()`, then define a `GameSpec`:
 
 ```python
 SPEC = GameSpec(
@@ -44,21 +42,18 @@ SPEC = GameSpec(
 )
 ```
 
-Ardından `games/__init__.py` içindeki `all_games()` listesine ekle.
+Add it to `all_games()` in `games/__init__.py`.
 
-- `process_names`: Windows'taki `.exe` adı ve Mac/Linux'taki süreç adı, küçük harfle.
-- `docs_folder`: `Belgeler/Paradox Interactive` altındaki klasörün tam adı.
-- Oyun menüye dönüş ve kayıt yükleme gibi durumları kendi log'unda farklı yazabilir. Victoria 3'te `Transition Empty->Game` ve `Transition Game->Empty` satırları kullanılıyor.
+- `process_names`: lowercase process names for Windows (`.exe`) and macOS/Linux.
+- `docs_folder`: exact folder name under `Documents/Paradox Interactive`.
 
 ## 4. Test
 
-`companion/tests/test_<oyun>.py` altına gerçek log satırlarından örneklerle testler ekle ve dene:
+Add `companion/tests/test_<game>.py` with real log lines, then:
 
 ```sh
 python3 -m unittest discover -s companion/tests
 python3 companion/run.py --game ck3 --log debug.log --dry-run
 ```
 
-## 5. README
-
-README'deki oyun tablosunu güncelle.
+Finally, add the game to the supported list in the README.

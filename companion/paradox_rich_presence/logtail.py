@@ -1,10 +1,10 @@
-"""Buyuyen bir log dosyasini 'tail -f' gibi okur."""
+"""Reads a growing log file like 'tail -f'."""
 
 import sys
 
 
 class LogTailer:
-    """Dosyayi 'tail -f' gibi okur; oyun acilista debug.log'u dondurdugunde bastan baslar."""
+    """Follows a file like 'tail -f' and starts over when the game rotates debug.log on launch."""
 
     def __init__(self, path):
         self.path = path

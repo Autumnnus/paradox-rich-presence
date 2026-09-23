@@ -1,9 +1,9 @@
 name: Release
 
-# v* etiketiyle bir GitHub surumu yayinlar. SignPath ayarliysa exe imzalanir (release-signing,
-# SignPath panelinden elle onay gerekir); ayarli degilse imzasiz exe "on surum" olarak yayinlanir.
-# SignPath Foundation basvurusu projenin once yayinlanmis olmasini istedigi icin ilk surum
-# imzasiz cikabilir. Elle calistirildiginda (workflow_dispatch) yalnizca artifact uretir.
+# A v* tag publishes a GitHub release. When SignPath is configured the exe is signed
+# (release-signing, approved manually in SignPath); otherwise the unsigned exe is published
+# as a pre-release. SignPath Foundation requires the project to be released before applying,
+# so the first release may be unsigned. Manual runs (workflow_dispatch) only build artifacts.
 on:
   push:
     tags: ["v*"]
@@ -23,10 +23,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Testler
+      - name: Tests
         run: python -m unittest discover -s companion/tests -v
 
-      - name: Surum
+      - name: Version
         id: version
         shell: bash
         run: |
@@ -34,7 +34,7 @@ jobs:
             version="${GITHUB_REF_NAME#v}"
             code=$(python -c "import sys; sys.path.insert(0, 'companion'); import paradox_rich_presence as p; print(p.__version__)")
             if [ "$version" != "$code" ]; then
-              echo "::error::Etiket ($version) ile __version__ ($code) ayni olmali."
+              echo "::error::Tag ($version) must match __version__ ($code)."
               exit 1
             fi
           else
@@ -42,7 +42,7 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Derle
+      - name: Build
         shell: bash
         run: |
           pip install "pyinstaller==6.*"
@@ -54,7 +54,7 @@ jobs:
             --add-data "companion/paradox_rich_presence/data;paradox_rich_presence/data" \
             companion/run.py
 
-      - name: Imzasiz derlemeyi yukle
+      - name: Upload unsigned build
         id: upload-unsigned
         uses: actions/upload-artifact@v7
         with:
@@ -62,7 +62,7 @@ jobs:
           path: dist/ParadoxRichPresence.exe
           if-no-files-found: error
 
-      - name: SignPath ile imzala
+      - name: Sign with SignPath
         if: vars.SIGNPATH_ORGANIZATION_ID != ''
         uses: signpath/github-action-submit-signing-request@v3
         with:
@@ -77,18 +77,18 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: signed
 
-      - name: Imzasiz dosyayi kullan (SignPath ayarlanmamis)
+      - name: Use unsigned build (SignPath not configured)
         if: vars.SIGNPATH_ORGANIZATION_ID == ''
         shell: bash
         run: mkdir -p signed && cp dist/ParadoxRichPresence.exe signed/
 
-      - name: Sonucu yukle
+      - name: Upload result
         uses: actions/upload-artifact@v7
         with:
           name: ParadoxRichPresence-windows
           path: signed/ParadoxRichPresence.exe
 
-      - name: GitHub surumu
+      - name: GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
         with:

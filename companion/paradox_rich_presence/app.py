@@ -1,12 +1,12 @@
-"""Ana dongu: hangi Paradox oyununun acik oldugunu algilar, o oyunun log dosyasini
-takip eder ve Discord etkinligini oyuna ozel Application ID ile gunceller.
+"""Main loop: detects which Paradox game is running, follows that game's log file
+and updates the Discord activity with the game's own Application ID.
 
-Kullanim:
-    python3 companion/run.py                      # normal calisma
-    python3 companion/run.py --dry-run            # Discord'a gondermeden etkinligi yazdir
-    python3 companion/run.py --game vic3 --log /yol/debug.log --dry-run   # test
-Windows'ta paketlenmis .exe ilk acilista oturum acilisinda baslatmayi sorar;
-calisirken yeniden acilirsa durdurma secenegi sunar.
+Usage:
+    python3 companion/run.py                      # normal run
+    python3 companion/run.py --dry-run            # log the activity instead of sending it
+    python3 companion/run.py --game vic3 --log /path/debug.log --dry-run   # testing
+The packaged Windows .exe asks about starting at sign-in on first launch and offers
+to stop when launched again while running.
 """
 
 import argparse
@@ -25,34 +25,34 @@ from .logtail import LogTailer
 log = logging.getLogger("prp")
 
 DEFAULT_CONFIG = {
-    # Bayragi bilinmeyen ulkelerde gosterilecek gorsel: Developer Portal'daki asset adi ya da https adresi
+    # Image shown when there is no flag: an asset name from the Developer Portal or an https URL
     "large_image": "logo",
     "flags": True,
     "status_icons": True,
-    # Discord uye listesinde uygulama adi yerine hangi satir gorunsun: name, details, state
+    # Which line replaces the game name in Discord's member list: name, details, state
     "status_display": "details",
-    # Cok oyunculuda gosterilecek ulke (ornegin "TUR"); bos ise yerel oyuncu
+    # Country to show in multiplayer (e.g. "TUR"); empty means the local player
     "country_tag": "",
-    # Bu kadar saniye yeni ay gelmezse oyunun duraklatildigi varsayilir
+    # Show a pause marker when the in-game date has not advanced for this many seconds
     "pause_after_seconds": 180,
-    # Profilde gorunecek butonlar: [{"label": "...", "url": "https://..."}], en fazla 2
+    # Up to 2 profile buttons: [{"label": "...", "url": "https://..."}]
     "buttons": [],
-    # Oyuna ozel ayarlar ve Application ID degisiklikleri: {"vic3": {"client_id": "..."}}
+    # Per-game overrides, including Application IDs: {"vic3": {"client_id": "..."}}
     "games": {},
 }
 
 POLL_SECONDS = 1.0
 PROCESS_CHECK_SECONDS = 5.0
-MIN_UPDATE_INTERVAL = 15  # Discord etkinlik guncellemelerini yaklasik 15 sn'de bire sinirliyor
+MIN_UPDATE_INTERVAL = 15  # Discord rate-limits activity updates to roughly one per 15 s
 STATUS_DISPLAY_TYPES = {"name": 0, "state": 1, "details": 2}
 
 
-# --------------------------------------------------------------------------- kurulum
+# --------------------------------------------------------------------------- setup
 
 def setup_logging(verbose):
     handlers = [logging.handlers.RotatingFileHandler(
         str(system.data_dir() / "companion.log"), maxBytes=512 * 1024, backupCount=1, encoding="utf-8")]
-    if sys.stdout is not None:  # konsolsuz Windows derlemesinde stdout yok
+    if sys.stdout is not None:  # the windowless Windows build has no stdout
         handlers.append(logging.StreamHandler(sys.stdout))
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, handlers=handlers,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
@@ -67,12 +67,12 @@ def load_config(path=None):
     except FileNotFoundError:
         pass
     except (OSError, ValueError) as e:
-        log.warning("Ayar dosyasi okunamadi (%s): %s", path, e)
+        log.warning("Could not read config file (%s): %s", path, e)
     return cfg
 
 
 def game_config(cfg, game):
-    """Genel ayarlarin uzerine oyuna ozel ayarlar."""
+    """Global settings with the game's overrides applied."""
     merged = {k: v for k, v in cfg.items() if k != "games"}
     merged.setdefault("large_text", game.name)
     merged.update(cfg.get("games", {}).get(game.key, {}))
@@ -81,7 +81,7 @@ def game_config(cfg, game):
 
 
 def finalize(act, cfg, status_display_ok):
-    """Discord'a gidecek son eklemeler (butonlar, uye listesi gorunumu)."""
+    """Last additions before sending (buttons, member list display)."""
     act = dict(act)
     buttons = [b for b in cfg.get("buttons", []) if b.get("label") and b.get("url")][:2]
     if buttons:
@@ -91,10 +91,10 @@ def finalize(act, cfg, status_display_ok):
     return act
 
 
-# --------------------------------------------------------------------------- oturum
+# --------------------------------------------------------------------------- session
 
 class GameSession:
-    """Acik olan tek bir oyun icin log takibi, durum ve Discord baglantisi."""
+    """Log tailing, state and Discord connection for one running game."""
 
     def __init__(self, game, cfg, log_path=None, dry_run=False):
         self.game = game
@@ -111,7 +111,7 @@ class GameSession:
         self.last_sent = None
         self.next_send_at = 0.0
         self.status_display_ok = True
-        log.info("%s algilandi, log: %s", game.name, path)
+        log.info("%s detected, log: %s", game.name, path)
 
     def tick(self):
         for line in self.tailer.read_lines():
@@ -124,29 +124,29 @@ class GameSession:
             return
         self.next_send_at = time.time() + MIN_UPDATE_INTERVAL
         if self.dry_run:
-            log.info("Etkinlik: %s", json.dumps(act, ensure_ascii=False))
+            log.info("Activity: %s", json.dumps(act, ensure_ascii=False))
             self.last_sent = act
             return
         try:
             if not self.ipc.connected and not self.ipc.connect():
-                raise ConnectionError("Discord IPC soketi bulunamadi (Discord acik mi?)")
+                raise ConnectionError("Discord IPC socket not found (is Discord running?)")
             self.ipc.set_activity(act)
-            log.info("Guncellendi: %s | %s", act.get("details"), act.get("state", ""))
+            log.info("Updated: %s | %s", act.get("details"), act.get("state", ""))
             self.last_sent = act
         except ValueError as e:
-            # Eski Discord surumleri status_display_type alanini tanimayabilir
+            # Older Discord versions may not know status_display_type
             if self.status_display_ok and "status_display_type" in act:
-                log.warning("status_display_type reddedildi, alan olmadan denenecek: %s", e)
+                log.warning("status_display_type rejected, retrying without it: %s", e)
                 self.status_display_ok = False
                 self.next_send_at = 0.0
             else:
-                log.warning("Discord etkinligi reddetti: %s", e)
+                log.warning("Discord rejected the activity: %s", e)
         except (OSError, ConnectionError) as e:
-            log.info("Discord'a ulasilamadi: %s (tekrar denenecek)", e)
+            log.info("Could not reach Discord: %s (will retry)", e)
             self.ipc.close()
 
     def close(self):
-        log.info("%s kapandi", self.game.name)
+        log.info("%s closed", self.game.name)
         self.tailer.close()
         if self.ipc.connected:
             try:
@@ -185,37 +185,38 @@ def run(cfg, games, forced_game=None, log_path=None, dry_run=False, stop_request
             session.close()
 
 
-# --------------------------------------------------------------------------- giris
+# --------------------------------------------------------------------------- entry point
 
 def _windows_startup(args):
-    """Paketlenmis Windows uygulamasinin tek ornek, otomatik baslatma ve durdurma akisi.
+    """Single instance, autostart and stop flow of the packaged Windows app.
 
-    Donus: calismaya devam edilecekse WindowsInstance, cikilacaksa None.
+    Returns the WindowsInstance to keep running, or None to exit.
     """
     inst = system.WindowsInstance()
     if args.uninstall:
         system.set_autostart(False)
         inst.request_stop()
-        system.message_box("%s durduruldu ve otomatik başlatma kaldırıldı." % APP_NAME)
+        system.message_box("%s has been stopped and will no longer start with Windows." % APP_NAME)
         return None
     if inst.already_running:
         if system.message_box(
-                "%s zaten arka planda çalışıyor.\n\n"
-                "Durdurmak ve Windows açılışında otomatik başlatmayı kaldırmak ister misiniz?" % APP_NAME,
+                "%s is already running in the background.\n\n"
+                "Do you want to stop it and remove it from Windows startup?" % APP_NAME,
                 yes_no=True):
             system.set_autostart(False)
             inst.request_stop()
         return None
     asked = system.data_dir() / "autostart_asked"
     if not system.autostart_enabled() and not args.no_autostart and not asked.exists():
-        # Sistem ayari degistirilmeden once kullaniciya sorulur (SignPath Foundation kosulu);
-        # cevap hatirlanir, "Hayir" diyene her acilista yeniden sorulmaz.
+        # Ask before changing system settings (SignPath Foundation requirement); the
+        # answer is remembered so "No" is not asked again on every launch.
         asked.touch()
         autostart = system.message_box(
-            "%s arka planda çalışmaya başladı.\n\n"
-            "Desteklenen bir Paradox oyununu modu etkin olarak açtığınızda Discord profilinizde görünür.\n\n"
-            "Windows her açıldığında kendiliğinden başlasın mı?\n"
-            "(Durdurmak ya da bu ayarı kaldırmak için programı yeniden açmanız yeterli.)" % APP_NAME,
+            "%s is now running in the background.\n\n"
+            "Your status appears on your Discord profile when you play a supported "
+            "Paradox game with the mod enabled.\n\n"
+            "Start it automatically with Windows?\n"
+            "(To stop it or remove it from startup, just open the program again.)" % APP_NAME,
             yes_no=True)
         if autostart:
             system.set_autostart(True)
@@ -225,12 +226,12 @@ def _windows_startup(args):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="paradox-rich-presence", description=APP_NAME)
     ap.add_argument("--version", action="version", version=__version__)
-    ap.add_argument("--dry-run", action="store_true", help="Discord'a gonderme, etkinligi logla")
-    ap.add_argument("--game", help="surec kontrolu yapmadan bu oyunu varsay (test icin), ornegin vic3")
-    ap.add_argument("--log", help="log dosyasi yolu (test icin)")
-    ap.add_argument("--config", help="ayar dosyasi yolu")
-    ap.add_argument("--no-autostart", action="store_true", help="Windows'ta otomatik baslatmayi kurma")
-    ap.add_argument("--uninstall", action="store_true", help="Windows'ta durdur ve otomatik baslatmayi kaldir")
+    ap.add_argument("--dry-run", action="store_true", help="log the activity instead of sending it to Discord")
+    ap.add_argument("--game", help="assume this game is running, skipping process detection (e.g. vic3)")
+    ap.add_argument("--log", help="path to the game log file (for testing)")
+    ap.add_argument("--config", help="path to the config file")
+    ap.add_argument("--no-autostart", action="store_true", help="Windows: do not offer to start with Windows")
+    ap.add_argument("--uninstall", action="store_true", help="Windows: stop and remove from startup")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
 
@@ -240,7 +241,7 @@ def main(argv=None):
     if args.game:
         forced = next((g for g in games if g.key == args.game), None)
         if forced is None:
-            ap.error("bilinmeyen oyun: %s (desteklenenler: %s)" % (args.game, ", ".join(g.key for g in games)))
+            ap.error("unknown game: %s (supported: %s)" % (args.game, ", ".join(g.key for g in games)))
 
     stop_requested = lambda: False  # noqa: E731
     if system.IS_WINDOWS and getattr(sys, "frozen", False):
@@ -249,9 +250,9 @@ def main(argv=None):
             return
         stop_requested = inst.stop_requested
 
-    log.info("%s %s basladi (%s)", APP_NAME, __version__, ", ".join(g.name for g in games))
+    log.info("%s %s started (%s)", APP_NAME, __version__, ", ".join(g.name for g in games))
     try:
         run(load_config(args.config), games, forced, args.log, args.dry_run, stop_requested)
     except KeyboardInterrupt:
         pass
-    log.info("Durduruldu")
+    log.info("Stopped")

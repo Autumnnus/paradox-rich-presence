@@ -1,11 +1,9 @@
-# Modlar
+# Mods
 
-Her klasör bir oyunun modudur. Oyunlar modu doğrudan buradan okumaz. Güncelleme yaparken klasörün içeriğini oyunun mod klasörüne elle kopyala:
+One folder per game. Games do not load mods from here; copy a folder's contents into the game's mod folder when releasing an update:
 
-| Oyun | Kaynak | Hedef |
+| Game | Source | Target |
 |---|---|---|
-| Victoria 3 | `mods/vic3/` | `Belgeler/Paradox Interactive/Victoria 3/mod/Discord Rich Presence/` |
+| Victoria 3 | `mods/vic3/` | `Documents/Paradox Interactive/Victoria 3/mod/<mod name>/` |
 
-Mod dosyaları yardımcı programla aynı protokol sürümünü kullanmalı (Victoria 3 için `DRP|2|...`). Protokolü değiştiren bir güncellemede mod ve yardımcı program birlikte yayınlanmalı.
-
-Planlanan oyunlar (CK3, EU5, HOI4) için bkz. [docs/adding-a-game.md](../docs/adding-a-game.md).
+The mod and the companion must use the same protocol version (`DRP|2|...` for Victoria 3). Release both together when the protocol changes.

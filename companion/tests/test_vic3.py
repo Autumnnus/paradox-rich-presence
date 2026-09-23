@@ -13,7 +13,7 @@ from paradox_rich_presence.logtail import LogTailer  # noqa: E402
 PREFIX = "[20:30:29][jomini_effect_impl.cpp:454]: common/on_actions/drp_on_actions.txt:25: DRP|2|"
 BASE = [
     "local|GBR", "begin|GBR",
-    "kv|GBR|country|Büyük Britanya", "kv|GBR|date|Nisan 1, 1839",
+    "kv|GBR|country|Great Britain", "kv|GBR|date|April 1, 1839",
     "kv|GBR|gdp|29.4M", "kv|GBR|gdp_rank|2", "kv|GBR|population|25.86M", "kv|GBR|rank|great_power",
 ]
 
@@ -30,42 +30,42 @@ class ParseTests(unittest.TestCase):
     def test_kv_and_item(self):
         self.assertEqual(vic3.parse_line(PREFIX + "kv|GBR|gdp|25.4M"),
                          {"event": "kv", "tag": "GBR", "key": "gdp", "value": "25.4M"})
-        self.assertEqual(vic3.parse_line(PREFIX + "item|GBR|enemy|Rusya")["value"], "Rusya")
+        self.assertEqual(vic3.parse_line(PREFIX + "item|GBR|enemy|Russia")["value"], "Russia")
 
     def test_format_codes_are_stripped(self):
-        ev = vic3.parse_line(PREFIX + "kv|GBR|country|#v Osmanlı İmparatorluğu#!")
-        self.assertEqual(ev["value"], "Osmanlı İmparatorluğu")
+        ev = vic3.parse_line(PREFIX + "kv|TUR|country|#v Ottoman Empire#!")
+        self.assertEqual(ev["value"], "Ottoman Empire")
 
     def test_unrelated_and_old_protocol_lines_are_ignored(self):
         self.assertIsNone(vic3.parse_line("[20:00][x.cpp:1]: Total time mesh in 0 ms"))
-        self.assertIsNone(vic3.parse_line("x: DRP|1|month|GBR|Büyük Britanya|..."))
+        self.assertIsNone(vic3.parse_line("x: DRP|1|month|GBR|Great Britain|..."))
 
     def test_year_of(self):
-        self.assertEqual(vic3.year_of("Haziran 1, 1836"), "1836")
-        self.assertEqual(vic3.year_of("1 Mart 1901"), "1901")
+        self.assertEqual(vic3.year_of("June 1, 1836"), "1836")
+        self.assertEqual(vic3.year_of("1 Mart 1901"), "1901")  # other localizations
 
 
 class ActivityTests(unittest.TestCase):
     def test_peace(self):
         act = presence(["kv|GBR|war|no"], {"GBR": {"iso": "gb"}}).activity()
-        self.assertEqual(act["details"], "Büyük Britanya · Üstün Güç")
-        self.assertEqual(act["state"], "1839 · £29.4M · 25.86M nüfus")
+        self.assertEqual(act["details"], "Great Britain · Great Power")
+        self.assertEqual(act["state"], "1839 · £29.4M · 25.86M pop")
         self.assertEqual(act["assets"]["large_image"], "https://flagcdn.com/w320/gb.png")
-        self.assertEqual(act["assets"]["large_text"], "GSYİH £29.4M (#2) · Nüfus 25.86M")
-        self.assertEqual(act["assets"]["small_text"], "Barışta")
+        self.assertEqual(act["assets"]["large_text"], "GDP £29.4M (#2) · Population 25.86M")
+        self.assertEqual(act["assets"]["small_text"], "At peace")
 
     def test_war_replaces_economy(self):
-        act = presence(["kv|GBR|war|yes", "item|GBR|enemy|Rusya", "item|GBR|enemy|Prusya",
-                        "item|GBR|enemy|Avusturya"]).activity()
-        self.assertEqual(act["state"], "1839 · ⚔ Savaşta: Rusya, Prusya +1")
-        self.assertEqual(act["assets"]["small_text"], "Savaşta: Rusya, Prusya +1")
+        act = presence(["kv|GBR|war|yes", "item|GBR|enemy|Russia", "item|GBR|enemy|Prussia",
+                        "item|GBR|enemy|Austria"]).activity()
+        self.assertEqual(act["state"], "1839 · ⚔ At war: Russia, Prussia +1")
+        self.assertEqual(act["assets"]["small_text"], "At war: Russia, Prussia +1")
 
     def test_revolution_and_play(self):
-        act = presence(["kv|GBR|war|yes", "item|GBR|enemy|Devrimciler",
-                        "item|GBR|enemy_rev|Devrimciler"]).activity()
-        self.assertIn("🔥 İç savaş: Devrimciler", act["state"])
-        act = presence(["kv|GBR|war|no", "item|GBR|play_enemy|Fransa"]).activity()
-        self.assertEqual(act["state"], "1839 · 🎯 Diplomatik oyun: Fransa")
+        act = presence(["kv|GBR|war|yes", "item|GBR|enemy|Revolutionaries",
+                        "item|GBR|enemy_rev|Revolutionaries"]).activity()
+        self.assertIn("🔥 Civil war: Revolutionaries", act["state"])
+        act = presence(["kv|GBR|war|no", "item|GBR|play_enemy|France"]).activity()
+        self.assertEqual(act["state"], "1839 · 🎯 Diplomatic play: France")
 
     def test_unknown_flag_falls_back_to_logo(self):
         act = presence(["kv|GBR|war|no"]).activity()
@@ -73,9 +73,9 @@ class ActivityTests(unittest.TestCase):
 
     def test_menu_and_waiting(self):
         p = vic3.Vic3Presence(game_config(DEFAULT_CONFIG, vic3.SPEC))
-        self.assertEqual(p.activity()["details"], "Ana menüde")
+        self.assertEqual(p.activity()["details"], "Main menu")
         p.feed({"event": "entered_game"})
-        self.assertEqual(p.activity()["state"], "İlk ay bekleniyor…")
+        self.assertEqual(p.activity()["state"], "Waiting for the first month…")
 
     def test_wikimedia_flag_url(self):
         url = vic3.flag_url({"wiki": "Flag of Russia.svg"})
@@ -94,7 +94,7 @@ class LogTailerTests(unittest.TestCase):
                 f.write("c\npartial")
             self.assertEqual(t.read_lines(), ["c"])
             t.close()
-            # Oyun acilista eski dosyayi tasiyip yenisini olusturur
+            # On launch the game moves the old file away and creates a new one
             os.replace(str(path), str(Path(d) / "debug.1.log"))
             path.write_text("new\n", encoding="utf-8")
             self.assertEqual(t.read_lines(), ["new"])

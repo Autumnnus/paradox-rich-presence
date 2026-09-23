@@ -1,8 +1,8 @@
-"""Victoria 3 log satirlarini Discord etkinligine ceviren durum makinesi.
+"""Victoria 3: turns the mod's log lines into a Discord activity.
 
-Mod her ay oyuncu ulkeler icin begin/kv/item/end bloklari yazar (bkz.
-mods/vic3/common/on_actions/drp_on_actions.txt). Burada bu bloklar raporlara donusturulur
-ve son rapordan sade, sabit bir etkinlik uretilir.
+Every month the mod writes a begin/kv/item/end block per player country (see
+mods/vic3/common/on_actions/drp_on_actions.txt). The blocks are collected into
+reports and the latest report is rendered as a compact, fixed activity.
 """
 
 import hashlib
@@ -13,12 +13,12 @@ import urllib.parse
 
 PROTOCOL_VERSION = "2"
 
-# --------------------------------------------------------------------------- ayristirma
+# --------------------------------------------------------------------------- parsing
 
-# Yerellestirme bicim kodlari: "#v metin#!", "@money!", kontrol ve bozuk karakterler
-_FORMAT_RE = re.compile(r"#[A-Za-z_]+[ ;]?|#!|@[A-Za-z_]+!|[\x00-\x1f\x7f\ufffd]")
-# Veri fonksiyonu bos bir nesneye denk geldiginde (ornegin arastirma yokken) oyunun
-# yazdigi hata metinleri; bu degerler alan hic yokmus gibi ele alinir.
+# Localization formatting codes ("#v text#!", "@money!"), control and replacement characters
+_FORMAT_RE = re.compile(r"#[A-Za-z_]+[ ;]?|#!|@[A-Za-z_]+!|[\x00-\x1f\x7f�]")
+# Error text the game prints when a data function hits an empty object; such values
+# are treated as missing.
 _INVALID_RE = re.compile(r"\(null\)|invalid|unknown|not found|^\?+$|^\[.*\]$", re.IGNORECASE)
 
 
@@ -31,7 +31,7 @@ def valid(value):
 
 
 def parse_line(line):
-    """debug.log satirindan olay cikarir. Tanimadigi satirlar icin None dondurur."""
+    """Extract an event from a debug.log line, or None for unrelated lines."""
     if "Transition Empty->Game" in line:
         return {"event": "entered_game"}
     if "Transition Game->Empty" in line:
@@ -48,30 +48,28 @@ def parse_line(line):
     if kind in ("begin", "end"):
         return {"event": kind, "tag": tag}
     if kind in ("kv", "item") and len(parts) >= 6:
-        # Deger '|' icerirse (bicim kodu vb.) kalan parcalar birlestirilir
+        # A value containing '|' (e.g. a formatting code) is joined back together
         value = clean("|".join(parts[5:]))
         return {"event": kind, "tag": tag, "key": parts[4], "value": value if valid(value) else ""}
     return None
 
 
-# --------------------------------------------------------------------------- bicimlendirme
+# --------------------------------------------------------------------------- formatting
 
-# Oyunun Turkce yerellestirmesinden (concept_*_power)
-RANKS = [
-    ("great_power", "Üstün Güç"),
-    ("major_power", "Büyük Güç"),
-    ("minor_power", "Orta Güç"),
-    ("insignificant_power", "Önemsiz Güç"),
-    ("unrecognized_major_power", "Tanınmayan Büyük Güç"),
-    ("unrecognized_regional_power", "Tanınmayan Bölgesel Güç"),
-    ("unrecognized_power", "Tanınmayan Güç"),
-    ("decentralized_power", "Dağınık Ülke"),
-]
-RANK_NAMES = dict(RANKS)
+RANK_NAMES = {
+    "great_power": "Great Power",
+    "major_power": "Major Power",
+    "minor_power": "Minor Power",
+    "insignificant_power": "Insignificant Power",
+    "unrecognized_major_power": "Unrecognized Major Power",
+    "unrecognized_regional_power": "Unrecognized Regional Power",
+    "unrecognized_power": "Unrecognized Power",
+    "decentralized_power": "Decentralized Nation",
+}
 
 
 def year_of(text):
-    """Oyun tarihinden yili cikarir ('Haziran 1, 1836' -> '1836')."""
+    """Year from an in-game date in any localization ('June 1, 1836' -> '1836')."""
     m = re.search(r"\b(\d{3,4})\b\s*$", text or "")
     return m.group(1) if m else ""
 
@@ -82,15 +80,15 @@ def join_names(names, limit=2):
     return text + (" +%d" % (len(names) - limit) if len(names) > limit else "")
 
 
-# --------------------------------------------------------------------------- gorseller
+# --------------------------------------------------------------------------- images
 
 TWEMOJI = "https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/%s.png"
 ICONS = {
-    "revolution": ("1f525", "Devrim"),
-    "war": ("2694", "Savaşta"),
-    "play": ("1f3af", "Diplomatik oyunda"),
-    "election": ("1f5f3", "Seçim kampanyası"),
-    "peace": ("1f54a", "Barışta"),
+    "revolution": "1f525",
+    "war": "2694",
+    "play": "1f3af",
+    "election": "1f5f3",
+    "peace": "1f54a",
 }
 
 
@@ -115,15 +113,15 @@ def load_flags(path):
         return {}
 
 
-# --------------------------------------------------------------------------- durum
+# --------------------------------------------------------------------------- state
 
 class Vic3Presence:
     def __init__(self, cfg, flags=None):
         self.cfg = cfg
         self.flags = flags or {}
         self.in_game = False
-        self.reports = {}   # tag -> bu ayin raporu
-        self.pending = {}   # tag -> begin/end arasinda biriken alanlar
+        self.reports = {}   # tag -> this month's report
+        self.pending = {}   # tag -> fields collected between begin and end
         self.local_tag = ""
         self.last_report_at = 0.0
         self.last_date = None
@@ -155,7 +153,7 @@ class Vic3Presence:
             report = self.pending.pop(ev["tag"])
             self.in_game = True
             if report.get("date") != self.last_date:
-                # Yeni ay: bu ay raporlamayan (oyundan cikan) oyuncular dusurulur
+                # New month: drop players that did not report (left the game)
                 self.reports = {}
                 self.last_date = report.get("date")
             self.reports[report["tag"]] = report
@@ -170,19 +168,19 @@ class Vic3Presence:
 
     @staticmethod
     def _status(r):
-        """Durum: (ikon anahtari, ikon tooltip'i, alt satirda gosterilecek metin ya da None)."""
+        """(icon key, icon tooltip, text for the second line or None)."""
         if r.get("enemy_rev"):
-            text = "İç savaş: " + join_names(r["enemy_rev"])
+            text = "Civil war: " + join_names(r["enemy_rev"])
             return "revolution", text, "🔥 " + text
         if r.get("war") == "yes":
-            text = "Savaşta" + (": " + join_names(r["enemy"]) if r.get("enemy") else "")
+            text = "At war" + (": " + join_names(r["enemy"]) if r.get("enemy") else "")
             return "war", text, "⚔ " + text
         if r.get("play_enemy"):
-            text = "Diplomatik oyun: " + join_names(r["play_enemy"])
+            text = "Diplomatic play: " + join_names(r["play_enemy"])
             return "play", text, "🎯 " + text
         if r.get("election"):
-            return "election", "Seçim kampanyası", None
-        return "peace", "Barışta", None
+            return "election", "Election campaign", None
+        return "peace", "At peace", None
 
     def activity(self, now=None):
         now = now or time.time()
@@ -191,13 +189,13 @@ class Vic3Presence:
         if self.session_start:
             act["timestamps"] = {"start": int(self.session_start)}
         if not self.in_game:
-            act["details"] = "Ana menüde"
+            act["details"] = "Main menu"
             return act
         tag = self.selected_tag()
         r = self.reports.get(tag)
         if r is None:
-            act["details"] = "Oyunda"
-            act["state"] = "İlk ay bekleniyor…"
+            act["details"] = "In game"
+            act["state"] = "Waiting for the first month…"
             return act
 
         details = r.get("country") or tag
@@ -208,27 +206,27 @@ class Vic3Presence:
             details = "⏸ " + details
 
         gdp = "£" + r["gdp"] if r.get("gdp") else ""
-        pop = r["population"] + " nüfus" if r.get("population") else ""
+        pop = r["population"] + " pop" if r.get("population") else ""
         icon_key, icon_text, conflict = self._status(r)
-        # Alt satir: yil + (catisma varsa o, yoksa GSYIH ve nufus)
+        # Second line: year + the conflict if there is one, otherwise GDP and population
         state = [year_of(r.get("date", ""))]
         state += [conflict] if conflict else [gdp, pop]
 
         act["details"] = details[:128]
-        act["state"] = " · ".join(p for p in state if p)[:128] or "Oyunda"
+        act["state"] = " · ".join(p for p in state if p)[:128] or "In game"
 
         flag = flag_url(self.flags.get(tag)) if cfg.get("flags", True) else None
         if flag:
             act["assets"]["large_image"] = flag
         hover = []
         if gdp:
-            hover.append("GSYİH %s" % gdp + (" (#%s)" % r["gdp_rank"] if r.get("gdp_rank") else ""))
+            hover.append("GDP %s" % gdp + (" (#%s)" % r["gdp_rank"] if r.get("gdp_rank") else ""))
         if r.get("population"):
-            hover.append("Nüfus %s" % r["population"])
+            hover.append("Population %s" % r["population"])
         if hover:
             act["assets"]["large_text"] = " · ".join(hover)[:128]
         if cfg.get("status_icons", True):
-            act["assets"]["small_image"] = TWEMOJI % ICONS[icon_key][0]
+            act["assets"]["small_image"] = TWEMOJI % ICONS[icon_key]
             act["assets"]["small_text"] = icon_text[:128]
 
         players = len(self.reports)
@@ -237,7 +235,7 @@ class Vic3Presence:
         return act
 
 
-# --------------------------------------------------------------------------- oyun tanimi
+# --------------------------------------------------------------------------- game definition
 
 def _create_presence(cfg):
     from pathlib import Path
